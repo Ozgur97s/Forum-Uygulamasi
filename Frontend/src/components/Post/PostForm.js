@@ -14,6 +14,13 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import CommentIcon from "@mui/icons-material/Comment";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { makeStyles } from "@mui/styles";
+import {
+  Button,
+  InputAdornment,
+  inputAdornmentClasses,
+  OutlinedInput,
+} from "@mui/material";
+import { SettingsCell } from "@mui/icons-material";
 
 const useStyles = makeStyles({
   link: {
@@ -38,13 +45,40 @@ const ExpandMore = styled((props) => {
 
 function Post(props) {
   const classes = useStyles();
+  const savePost = () => {
+    fetch("/posts", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: title,
+        userId: userId,
+        text: text,
+      }),
+    })
+      .then((res) => res.json())
+      .catch((err) => console.log("error"));
+  };
+  const [isSent, setIsSent] = useState(false);
+  const { userId, userName, refreshPost } = props;
+  const [text, setText] = useState("");
+  const [title, setTitle] = useState("");
+  const handleSubmit = () => {
+    savePost();
+    setIsSent(true);
+    setTitle("");
+    setText("");
+    refreshPost();
+  };
 
-  const { title, text, userId, userName } = props;
-  const [expanded, setExpanded] = useState(false);
-  const handleExpandClick = () => setExpanded(!expanded);
-  const [liked, setLiked] = useState(false);
-  const handleLike = () => {
-    setLiked(!liked);
+  const handleTitle = (value) => {
+    setTitle(value);
+    setIsSent(false);
+  };
+  const handleText = (value) => {
+    setText(value);
+    setIsSent(false);
   };
   return (
     <div className="postContainer">
@@ -65,7 +99,17 @@ function Post(props) {
               <MoreVertIcon />
             </IconButton>
           }
-          title={title}
+          title={
+            <OutlinedInput
+              id="outlined-adornment-amount"
+              multiline
+              placeholder="Title"
+              inputProps={{ maxLength: 25 }}
+              fullWidth
+              value={title}
+              onChange={(i) => handleTitle(i.target.value)}
+            ></OutlinedInput>
+          }
           titleTypographyProps={{ style: { textAlign: "left" } }}
         />
 
@@ -75,27 +119,25 @@ function Post(props) {
             variant="body2"
             sx={{ color: "text.secondary" }}
           >
-            {text}
+            <OutlinedInput
+              id="outlined-adornment-amount"
+              multiline
+              placeholder="Title"
+              inputProps={{ maxLength: 250 }}
+              fullWidth
+              value={text}
+              onChange={(i) => handleText(i.target.value)}
+              endAdornment={
+                <InputAdornment position="end">
+                  <Button variant="contained" onClick={handleSubmit}>
+                    {" "}
+                    Post{" "}
+                  </Button>
+                </InputAdornment>
+              }
+            ></OutlinedInput>
           </Typography>
         </CardContent>
-        <CardActions disableSpacing>
-          <IconButton onClick={handleLike} aria-label="add to favorites">
-            <FavoriteIcon style={liked ? { color: "red" } : null} />
-          </IconButton>
-          <ExpandMore
-            expand={expanded}
-            onClick={handleExpandClick}
-            aria-expanded={expanded}
-            aria-label="show more"
-          >
-            <CommentIcon />
-          </ExpandMore>
-        </CardActions>
-        <Collapse in={expanded} timeout="auto" unmountOnExit>
-          <CardContent>
-            <Typography sx={{ marginBottom: 2 }}>Method:</Typography>
-          </CardContent>
-        </Collapse>
       </Card>
     </div>
   );
