@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.project.forumapp.entities.Post;
 import com.project.forumapp.requests.PostCreateRequest;
 import com.project.forumapp.requests.PostUpdateRequest;
+import com.project.forumapp.responses.PostResponse;
 import com.project.forumapp.services.PostService;
 
 @RestController
@@ -28,7 +29,7 @@ public class PostController {
 	}
 	
 	@GetMapping
-	public List<Post> getAllPosts(@RequestParam Optional<Long> userId){
+	public List<PostResponse> getAllPosts(@RequestParam Optional<Long> userId){
 		return postService.getAllPosts(userId);
 	}
 	
