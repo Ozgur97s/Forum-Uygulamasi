@@ -2,6 +2,8 @@ package com.project.forumapp.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,7 @@ import com.project.forumapp.entities.User;
 import com.project.forumapp.repos.LikeRepository;
 import com.project.forumapp.requests.LikeCreateRequest;
 import com.project.forumapp.requests.UpdateLikeRequest;
+import com.project.forumapp.responses.LikeResponse;
 
 @Service
 public class LikeService {
@@ -26,16 +29,17 @@ public class LikeService {
 	}
 
 
-	public List<Like> getAllLikesWithParam(Optional<Long> userId, Optional<Long> postId) {
-		if (userId.isPresent() && postId.isPresent()) {
-			return likeRepository.findByUserIdAndPostId(userId.get(), postId.get());
-		} else if (userId.isPresent()) {
-			return likeRepository.findByUserId(userId.get());
-		} else if (postId.isPresent()) {
-			return likeRepository.findByPostId(postId.get());
-		} else {
-			return likeRepository.findAll();
-		}
+	public List<LikeResponse> getAllLikesWithParam(Optional<Long> userId, Optional<Long> postId) {
+		List<Like> list;
+		if(userId.isPresent() && postId.isPresent()) {
+			list = likeRepository.findByUserIdAndPostId(userId.get(), postId.get());
+		}else if(userId.isPresent()) {
+			list = likeRepository.findByUserId(userId.get());
+		}else if(postId.isPresent()) {
+			list = likeRepository.findByPostId(postId.get());
+		}else
+			list = likeRepository.findAll();
+		return list.stream().map(like -> new LikeResponse(like)).collect(Collectors.toList());
 	}
 
 	public Like getOneLikeById(Long likeId) {

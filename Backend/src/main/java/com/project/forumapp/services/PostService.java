@@ -4,33 +4,44 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.project.forumapp.entities.Like;
 import com.project.forumapp.entities.Post;
 import com.project.forumapp.entities.User;
+import com.project.forumapp.repos.LikeRepository;
 import com.project.forumapp.repos.PostRepository;
 import com.project.forumapp.requests.PostCreateRequest;
 import com.project.forumapp.requests.PostUpdateRequest;
+import com.project.forumapp.responses.LikeResponse;
 import com.project.forumapp.responses.PostResponse;
 
 @Service
+
 public class PostService {
 	private PostRepository postRepository;
+	private LikeService likeService;
 	private UserService userService;
 
 	public PostService(PostRepository postRepository, UserService userService) {
 		this.postRepository = postRepository;
 		this.userService = userService;
 	}
+	@Autowired
+	public void setLikeService(LikeService likeService) {
+		this.likeService = likeService;
+	}
 
 	public List<PostResponse> getAllPosts(Optional<Long> userId) {
 		List<Post> list;
-		if (userId.isPresent()) {
-			list = postRepository.findByUserId(userId);
-		} 
+		if(userId.isPresent()) {
+			 list = postRepository.findByUserId(userId);
+		}else
 			list = postRepository.findAll();
-			return list.stream().map(p-> new PostResponse(p)).collect(Collectors.toList());
-		
+		return list.stream().map(p -> { 
+			List<LikeResponse> likes = likeService.getAllLikesWithParam(Optional.ofNullable(null), Optional.of(p.getId()));
+			return new PostResponse(p, likes);}).collect(Collectors.toList());
 	}
 
 	public Post getOnePostById(Long postId) {

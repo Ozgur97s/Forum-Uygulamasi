@@ -14,6 +14,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import CommentIcon from "@mui/icons-material/Comment";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { makeStyles } from "@mui/styles";
+import Snackbar from "@mui/material/Snackbar";
 import {
   Button,
   InputAdornment,
@@ -80,8 +81,20 @@ function Post(props) {
     setText(value);
     setIsSent(false);
   };
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setIsSent(false);
+  };
   return (
     <div className="postContainer">
+      <Snackbar
+        open={isSent}
+        autoHideDuration={5000}
+        onClose={handleClose}
+        message="POST BAŞARILI ŞEKİLDE PAYLAŞI."
+      />
       <Card sx={{ width: 800 }}>
         <CardHeader
           avatar={
