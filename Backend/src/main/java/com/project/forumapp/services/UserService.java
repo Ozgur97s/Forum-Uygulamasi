@@ -46,6 +46,11 @@ public class UserService {
 		userRepository.deleteById(userId);
 		
 	}
+
+	public User getOneUserByUserName(String userName) {
+		// TODO Auto-generated method stub
+		return userRepository.findByUserName(userName);
+	}
 	
 	
 
