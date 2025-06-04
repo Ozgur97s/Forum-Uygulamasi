@@ -51,6 +51,7 @@ function Post(props) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: localStorage.getItem("tokenKey"),
       },
       body: JSON.stringify({
         title: title,

@@ -58,44 +58,63 @@ function Post(props) {
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(likes.length);
   let disabled = localStorage.getItem("currentUser") == null ? true : false;
-  const saveLike = () => {
-    fetch("/likes", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        postId: postId,
-        userId: userId,
-      }),
-    })
-      .then((res) => res.json())
-      .catch((err) => console.log("error"));
-  };
-
-  const deleteLike = () => {
-    fetch("/likes/" + likeId, {
-      method: "DELETE",
-    })
-      .then((res) => res.json())
-      .catch((err) => console.log("error"));
-  };
-  const checkedLikes = () => {
-    var likeControl = likes.find(
-      (like) => like.userId === localStorage.getItem("currentUser")
-    );
-    if (likeControl != null) {
-      setLikeId(likeControl.id);
-      setIsLiked(true);
+  const saveLike = async () => {
+    try {
+      const res = await fetch("/likes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: localStorage.getItem("tokenKey"),
+        },
+        body: JSON.stringify({
+          postId: postId,
+          userId: localStorage.getItem("currentUser"),
+        }),
+      });
+      if (!res.ok) throw new Error("Beğeni eklenemedi");
+      const data = await res.json();
+      setLikeId(data.id); // Yeni likeId backend'den dönüyorsa buraya set et
+    } catch (error) {
+      console.log(error);
     }
   };
-  const handleLike = () => {
-    setIsLiked(!isLiked);
+
+  const deleteLike = async () => {
+    try {
+      const res = await fetch("/likes/" + likeId, {
+        method: "DELETE",
+        headers: { Authorization: localStorage.getItem("tokenKey") },
+      });
+      if (!res.ok) throw new Error("Beğeni silinemedi");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const checkLikes = () => {
+    const currentUserId = localStorage.getItem("currentUser");
+    const likeControl = likes.find(
+      (like) => "" + like.userId === currentUserId
+    );
+    if (likeControl) {
+      setLikeId(likeControl.id);
+      setIsLiked(true);
+    } else {
+      setLikeId(null);
+      setIsLiked(false);
+    }
+  };
+
+  const handleLike = async () => {
     if (!isLiked) {
-      saveLike();
+      // Beğeniyi ekle
+      await saveLike();
+      setIsLiked(true);
       setLikeCount(likeCount + 1);
     } else {
-      deleteLike();
+      // Beğeniyi kaldır
+      await deleteLike();
+      setIsLiked(false);
       setLikeCount(likeCount - 1);
     }
   };
@@ -117,8 +136,9 @@ function Post(props) {
   };
 
   useEffect(() => {
-    checkedLikes();
-  });
+    checkLikes();
+  }, [likes]);
+
   useEffect(() => {
     if (isInitialMount.current) isInitialMount.current = false;
     else refreshComments();
@@ -178,10 +198,11 @@ function Post(props) {
             {error
               ? "error"
               : isLoaded
-              ? commentList.map((comment) => (
+              ? commentList.map((comment, index) => (
                   <Comment
-                    userId={1}
-                    userName={"USER"}
+                    key={index}
+                    userId={comment.userId}
+                    userName={comment.userName}
                     text={comment.text}
                   ></Comment>
                 ))

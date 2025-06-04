@@ -33,8 +33,7 @@ function Auth() {
       const result = await res.json();
 
       if (path === "login") {
-        localStorage.setItem("tokenKey", result.accessToken);
-        localStorage.setItem("refreshKey", result.refreshToken);
+        localStorage.setItem("tokenKey", result.message);
         localStorage.setItem("currentUser", result.userId);
         localStorage.setItem("userName", username);
       }
