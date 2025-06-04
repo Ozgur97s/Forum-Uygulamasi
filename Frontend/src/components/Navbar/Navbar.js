@@ -7,6 +7,8 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import { makeStyles } from "@mui/styles";
+import { useNavigate } from "react-router-dom";
+import { LockOpen } from "@mui/icons-material";
 
 const useStyles = makeStyles({
   title: {
@@ -25,8 +27,18 @@ const useStyles = makeStyles({
 });
 
 function Navbar() {
+  let navigate = useNavigate();
+
   const classes = useStyles();
   let userId = 1;
+
+  const onClick = () => {
+    localStorage.removeItem("tokenKey");
+    localStorage.removeItem("currentUser");
+    localStorage.removeItem("refreshKey");
+    localStorage.removeItem("userName");
+    navigate(0);
+  };
   return (
     <div>
       <Box sx={{ flexGrow: 1 }}>
@@ -47,12 +59,25 @@ function Navbar() {
               </Link>
             </Typography>
             <Typography variant="h6">
-              <Link
-                className={classes.link}
-                to={{ pathname: "/users/" + userId }}
-              >
-                User
-              </Link>
+              {localStorage.getItem("currentUser") == null ? (
+                <Link className={classes.link} to="/auth">
+                  Giriş/Kayıt ol
+                </Link>
+              ) : (
+                <div>
+                  <IconButton className={classes.link} onClick={onClick}>
+                    <LockOpen></LockOpen>
+                  </IconButton>
+                  <Link
+                    className={classes.link}
+                    to={{
+                      pathname: "/users/" + localStorage.getItem("currentUser"),
+                    }}
+                  >
+                    Profil
+                  </Link>
+                </div>
+              )}
             </Typography>
           </Toolbar>
         </AppBar>

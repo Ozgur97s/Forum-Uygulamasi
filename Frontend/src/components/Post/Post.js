@@ -57,6 +57,7 @@ function Post(props) {
   const isInitialMount = useRef(true);
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(likes.length);
+  let disabled = localStorage.getItem("currentUser") == null ? true : false;
   const saveLike = () => {
     fetch("/likes", {
       method: "POST",
@@ -80,7 +81,9 @@ function Post(props) {
       .catch((err) => console.log("error"));
   };
   const checkedLikes = () => {
-    var likeControl = likes.find((like) => like.userId === userId);
+    var likeControl = likes.find(
+      (like) => like.userId === localStorage.getItem("currentUser")
+    );
     if (likeControl != null) {
       setLikeId(likeControl.id);
       setIsLiked(true);
@@ -153,11 +156,14 @@ function Post(props) {
           </Typography>
         </CardContent>
         <CardActions disableSpacing>
-          <IconButton onClick={handleLike} aria-label="add to favorites">
+          <IconButton
+            disabled={disabled}
+            onClick={handleLike}
+            aria-label="add to favorites"
+          >
             <FavoriteIcon style={isLiked ? { color: "red" } : null} />
           </IconButton>
           {likeCount}
-
           <ExpandMore
             expand={expanded}
             onClick={handleExpandClick}
@@ -180,11 +186,15 @@ function Post(props) {
                   ></Comment>
                 ))
               : "Loading"}
-            <CommentForm
-              userId={1}
-              userName={"USER"}
-              postId={postId}
-            ></CommentForm>
+            {disabled ? (
+              ""
+            ) : (
+              <CommentForm
+                userId={localStorage.getItem("currentUser")}
+                userName={localStorage.getItem("userName")}
+                postId={postId}
+              ></CommentForm>
+            )}
           </Container>
         </Collapse>
       </Card>

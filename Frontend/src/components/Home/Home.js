@@ -21,6 +21,8 @@ function Home() {
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState([false]);
   const [postList, setPostList] = useState([]);
+  let disabled = localStorage.getItem("currentUser") == null ? true : false;
+
   const refreshPost = () => {
     fetch("/posts")
       .then((res) => res.json())
@@ -47,7 +49,16 @@ function Home() {
   } else {
     return (
       <div className={classes.container}>
-        <PostForm userId={1} userName={"nnnn"} refreshPost={refreshPost} />
+        {disabled ? (
+          ""
+        ) : (
+          <PostForm
+            userId={localStorage.getItem("currentUser")}
+            userName={localStorage.getItem("userName")}
+            refreshPost={refreshPost}
+          />
+        )}
+
         {postList.map((post) => (
           <Post
             likes={post.postLikes}
@@ -56,7 +67,7 @@ function Home() {
             userName={post.userName}
             title={post.title}
             text={post.text}
-          ></Post>
+          />
         ))}
       </div>
     );
