@@ -1,8 +1,11 @@
 package com.project.forumapp.entities;
 
+import java.util.Date;
+
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -39,6 +42,9 @@ public class Comment {
 	@Lob
 	@Column(columnDefinition = "text")
 	String text;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	Date createDate;
 	
 
 }

@@ -107,12 +107,10 @@ function Post(props) {
 
   const handleLike = async () => {
     if (!isLiked) {
-      // Beğeniyi ekle
       await saveLike();
       setIsLiked(true);
       setLikeCount(likeCount + 1);
     } else {
-      // Beğeniyi kaldır
       await deleteLike();
       setIsLiked(false);
       setLikeCount(likeCount - 1);
@@ -153,7 +151,7 @@ function Post(props) {
               to={{ pathname: "/users/" + userId }}
             >
               <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-                {userName.charAt(0).toUpperCase()}
+                {(userName?.charAt(0) || "?").toUpperCase()}
               </Avatar>
             </Link>
           }

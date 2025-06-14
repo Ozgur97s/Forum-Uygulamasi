@@ -58,7 +58,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 		if (StringUtils.hasText(bearer) && bearer.startsWith("Bearer ")) {
 
 			
-			return bearer.substring("bearer".length() +1);
+			return bearer.substring("Bearer ".length());
 			
 		}
 		return null;

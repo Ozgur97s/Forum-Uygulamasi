@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.project.forumapp.entities.User;
+import com.project.forumapp.responses.UserResponse;
 import com.project.forumapp.services.UserService;
 
 @RestController
@@ -34,8 +35,8 @@ public class UserController {
 	 }
 	 
 	 @GetMapping("/{userId}")
-	 public User getOneUser(@PathVariable Long userId) {
-		 return userService.getOneUserById(userId);
+	 public UserResponse getOneUser(@PathVariable Long userId) {
+		 return  new UserResponse(userService.getOneUserById(userId));
 		 
 	 }
 	 
@@ -50,6 +51,11 @@ public class UserController {
 		 userService.deleteById(userId);
 		 
 	 }
+	 
+	 @GetMapping("/activity/{userId}")
+	 public List<Object> getUserActivity(@PathVariable Long userId){
+		 return userService.getUserActivity(userId);	 }
+	 
 	 
 	 
 	 

@@ -1,5 +1,7 @@
 package com.project.forumapp.entities;
 
+import java.util.Date;
+
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -14,6 +16,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.Data;
 
 @Entity
@@ -32,6 +36,9 @@ public class Post {
 	@Lob
 	@Column(columnDefinition = "text")
 	String text;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	Date createDate;
 	
 	
 	
